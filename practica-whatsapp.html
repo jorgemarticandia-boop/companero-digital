@@ -34,6 +34,7 @@ p{margin:0 0 12px}
 .tip{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
 .warn{background:var(--warnbg);color:var(--warnink);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:700}
 .fb{border-radius:12px;padding:12px 14px;margin-top:14px;background:var(--okbg);color:var(--ok);font-weight:700}
+.btn.voz{background:var(--card);color:var(--pri);min-height:54px;margin-top:0;margin-bottom:12px}
 .note{font-size:.85rem;color:var(--mute);margin-top:14px}
 .home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
 </style>
@@ -84,7 +85,7 @@ function menu(){
   mod=null;
   document.getElementById('prog').textContent="Elegí qué querés practicar";
   document.getElementById('barfill').style.width="0%";
-  var s="<h1>Practicá WhatsApp</h1><p>Elegí una práctica. Podés repetirlas todas las veces que quieras.</p>";
+  var s="<h1>Practicá WhatsApp</h1><button class='btn voz' data-say='menu'>🔊 Escuchar</button><p>Elegí una práctica. Podés repetirlas todas las veces que quieras.</p>";
   Object.keys(M).forEach(function(k){s+="<button class='btn sec' data-m='"+k+"'>"+(done[k]?"✅ ":"")+M[k].name+"</button>";});
   document.getElementById('screen').innerHTML=s;
 }
@@ -100,10 +101,12 @@ function step(){
   var s=m.steps[idx];
   document.getElementById('prog').textContent=m.name+" · Paso "+(idx+1)+" de "+n;
   document.getElementById('barfill').style.width=((idx+1)/n*100)+"%";
-  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1><p>"+s[1]+"</p>"+s[2]+"<button class='btn' data-next='1'>👆 "+s[3]+"</button>"+(idx>0?"<button class='btn sec' data-prev='1'>← Atrás</button>":"")+"<button class='btn sec' data-menu='1'>Salir al menú</button>";
+  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1><button class='btn voz' data-say='1'>🔊 Escuchar este paso</button><p>"+s[1]+"</p>"+s[2]+"<button class='btn' data-next='1'>👆 "+s[3]+"</button>"+(idx>0?"<button class='btn sec' data-prev='1'>← Atrás</button>":"")+"<button class='btn sec' data-menu='1'>Salir al menú</button>";
 }
+function hablar(t){if('speechSynthesis' in window){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='es-PY';u.rate=.85;window.speechSynthesis.speak(u);}else{alert('La lectura en voz alta no está disponible en este dispositivo. Podés leer las instrucciones en pantalla.');}}
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+  if(d.say){if(d.say==='menu'){hablar(document.querySelector('#screen h1').textContent+'. Elegí una práctica. Podés repetirlas todas las veces que quieras.');}else{var st=M[mod].steps[idx];hablar(st[0]+'. '+st[1]+' Cuando estés listo, tocá: '+st[3]+'.');}return;}
   if(d.m){mod=d.m;idx=0;step();window.scrollTo(0,0);}
   else if(d.next){idx++;step();window.scrollTo(0,0);}
   else if(d.prev){idx--;step();window.scrollTo(0,0);}

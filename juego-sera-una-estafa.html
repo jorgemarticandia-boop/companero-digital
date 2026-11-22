@@ -36,6 +36,7 @@ p{margin:0 0 12px}
 .fb.no{background:var(--badbg);color:var(--bad)}
 .fb b{display:block;margin-bottom:4px}
 .rule{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
+.btn.voz{background:var(--card);color:var(--pri);min-height:54px;margin-top:0;margin-bottom:12px}
 .note{font-size:.85rem;color:var(--mute);margin-top:14px}
 .home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
 </style>
@@ -80,11 +81,11 @@ function show(){
   document.getElementById('barfill').style.width=(Math.min(i,Q.length)/Q.length*100)+"%";
   if(i>=Q.length){
     var msg=score>=7?"¡Excelente! Ya sabés reconocer las señales.":score>=5?"¡Muy bien! Repasá los que fallaste y vas a estar listo.":"Buen comienzo. Probá de nuevo, se aprende practicando.";
-    el.innerHTML="<h1>Acertaste "+score+" de "+Q.length+"</h1><p>"+msg+"</p><div class='rule'><strong>Regla de oro:</strong> frená si te apuran, te piden un código, una clave o plata, o te escribe alguien que no conocés.</div><button class='btn' data-a='again'>🔁 Jugar otra vez</button>";
+    el.innerHTML="<h1>Acertaste "+score+" de "+Q.length+"</h1><button class='btn voz' data-say='1'>🔊 Escuchar este paso</button><p>"+msg+"</p><div class='rule'><strong>Regla de oro:</strong> frená si te apuran, te piden un código, una clave o plata, o te escribe alguien que no conocés.</div><button class='btn' data-a='again'>🔁 Jugar otra vez</button>";
     return;
   }
   var q=Q[i]; answered=false;
-  el.innerHTML="<h1>¿Será una estafa?</h1><div class='msg'><small>"+q.from+"</small>"+q.text+"</div><button class='btn good' data-a='safe'>✅ Es seguro</button><button class='btn bad' data-a='scam'>🚫 Es una estafa</button><div id='fb'></div>";
+  el.innerHTML="<h1>¿Será una estafa?</h1><button class='btn voz' data-say='1'>🔊 Escuchar este paso</button><div class='msg'><small>"+q.from+"</small>"+q.text+"</div><button class='btn good' data-a='safe'>✅ Es seguro</button><button class='btn bad' data-a='scam'>🚫 Es una estafa</button><div id='fb'></div>";
   window.scrollTo(0,0);
 }
 document.addEventListener('click',function(e){
@@ -96,9 +97,12 @@ document.addEventListener('click',function(e){
   answered=true;
   var q=Q[i], right=(a==='scam')===q.scam;
   if(right) score++;
-  var btns=document.querySelectorAll('#screen .btn'); btns.forEach(function(x){x.disabled=true;});
+  var btns=document.querySelectorAll('#screen .btn:not(.voz)'); btns.forEach(function(x){x.disabled=true;});
   document.getElementById('fb').innerHTML="<div class='fb "+(right?"ok":"no")+"'><b>"+(right?"¡Correcto!":"Ojo, la respuesta era otra.")+"</b>"+q.why+"</div><button class='btn' data-a='next'>"+(i<Q.length-1?"Siguiente mensaje →":"Ver resultado")+"</button>";
 });
+function hablar(t){if('speechSynthesis' in window){window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='es-PY';u.rate=.85;window.speechSynthesis.speak(u);}else{alert('La lectura en voz alta no está disponible en este dispositivo. Podés leer las instrucciones en pantalla.');}}
+function hablarPantalla(extra){var c=document.getElementById('screen').cloneNode(true);c.querySelectorAll('button').forEach(function(x){x.remove();});var t=(c.textContent||'').replace(/[\u{1F000}-\u{1FFFF}\u{2190}-\u{21FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\uFE0F]/gu,' ').replace(/\s+/g,' ').trim();if(extra){t+=' Cuando estés listo, tocá: '+extra+'.';}hablar(t);}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!b.dataset.say)return;hablarPantalla('');});
 var root=document.documentElement;
 document.getElementById('big').addEventListener('click',function(){
   var on=this.getAttribute('aria-pressed')!=='true';
