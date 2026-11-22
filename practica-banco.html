@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: usar el banco con seguridad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F9;--card:#fff;--ink:#14202B;--mute:#4A5A68;--pri:#0B4F8A;--onpri:#fff;--line:#C9D3DC;--warnbg:#FFE08A;--warnink:#4A3600;--ok:#1B6B3A;--okbg:#DDF3E4;--bad:#A12B2B;--badbg:#FBE1E1;--fs:20px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 32px}
+.practice{background:var(--warnbg);color:var(--warnink);font-weight:700;padding:10px 14px;border-radius:10px;text-align:center;font-size:.9rem}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.tools button{font:inherit;font-size:.8rem;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.prog{font-size:.85rem;color:var(--mute);margin:4px 0 6px;min-height:1.3em}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:20px;margin-top:14px}
+h1{font-size:1.4rem;line-height:1.25;margin:0 0 10px}
+p{margin:0 0 12px}
+.btn{display:block;width:100%;font:inherit;font-weight:700;min-height:60px;padding:14px 18px;border-radius:14px;border:2px solid var(--pri);background:var(--pri);color:var(--onpri);margin-top:12px;cursor:pointer;text-align:center}
+.btn.sec{background:var(--card);color:var(--pri)}
+:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+.phone{border:3px solid var(--line);border-radius:18px;background:var(--bg);padding:12px;margin:12px 0}
+.row{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.row.on{border-color:var(--pri);font-weight:700;background:var(--okbg)}
+.row.bad{border-color:var(--bad);background:var(--badbg)}
+.tip{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
+.warn{background:var(--warnbg);color:var(--warnink);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:700}
+.fb{border-radius:12px;padding:12px 14px;margin-top:14px;background:var(--okbg);color:var(--ok);font-weight:700}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="./">← Volver a Compañero Digital</a>
+  <div class="practice" role="note">🧪 PRÁCTICA. «Banco de Práctica» es inventado. No uses tus claves ni datos reales.</div>
+  <div class="tools">
+    <button id="big" type="button" aria-pressed="false">A+ Letra grande</button>
+    <button id="con" type="button" aria-pressed="false">◐ Contraste</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <p class="note">Simulación educativa. No está conectada a ningún banco. Cada banco nombra sus opciones de forma distinta.</p>
+</div>
+
+<script>
+var M={
+ entrar:{name:"🔐 Entrar a la aplicación del banco",steps:[
+  ["Usá solo la aplicación oficial","Buscá en la tienda oficial (Play Store o App Store) el nombre exacto de tu banco. Fijate que sea la del banco y no una parecida.","<div class='phone'><div class='row on'>✅ Banco de Práctica — Banco de Práctica S.A.</div><div class='row bad'>❌ Banco Práctica Seguro — desarrollador desconocido</div></div>","Tocar la aplicación oficial"],
+  ["No entres desde enlaces","No toques enlaces que te lleguen por mensaje, aunque digan ser del banco. Abrí la aplicación vos mismo.","<div class='phone'><div class='row bad'>📩 «Su cuenta será bloqueada. Ingrese aquí: enlace-raro»</div></div><div class='warn'>🚫 Ignorá ese mensaje. El banco no te pide entrar desde un enlace.</div>","Entendido: no toco el enlace"],
+  ["Ingresá tus datos solo vos","Escribí tu usuario y tu clave vos mismo, en tu teléfono, sin que nadie mire. En la práctica son datos de ejemplo.","<div class='phone'><div class='row'>Usuario: ejemplo</div><div class='row'>Clave: ••••••••</div><div class='row on'>Ingresar</div></div>","Tocar «Ingresar»"]]},
+ saldo:{name:"💰 Consultar mi saldo",steps:[
+  ["Buscá «Cuentas» o «Saldo»","En la pantalla principal buscá una opción con ese nombre. Cambia según el banco.","<div class='phone'><div class='row on'>🏦 Mis cuentas</div><div class='row'>💸 Transferir</div><div class='row'>📄 Movimientos</div></div>","Tocar «Mis cuentas»"],
+  ["Leé tu saldo","Ahí ves cuánto dinero tenés. Es solo para mirar, no se mueve nada.","<div class='phone'><div class='row on'>Caja de ahorro<br><strong>Gs. 1.250.000</strong> (ejemplo)</div></div><div class='tip'>Si no estás seguro de algo, detenete y llamá al número oficial que figura en tu tarjeta.</div>","Entendido"]]},
+ mov:{name:"📄 Revisar mis movimientos",steps:[
+  ["Abrí «Movimientos»","Ahí ves lo que entró y salió de tu cuenta. Conviene mirarlo seguido.","<div class='phone'><div class='row'>Mis cuentas</div><div class='row on'>📄 Movimientos</div></div>","Tocar «Movimientos»"],
+  ["Buscá algo que no reconozcas","Mirá cada línea. Si ves una salida que no hiciste, no te quedes callado.","<div class='phone'><div class='row'>Supermercado — Gs. 180.000</div><div class='row'>Farmacia — Gs. 95.000</div><div class='row bad'>⚠️ Transferencia a «Juan P.» — Gs. 600.000 (no la hice)</div></div>","Tocar la transferencia rara"],
+  ["Avisá al banco ya","Llamá al número oficial del banco, el que figura en tu tarjeta o en el sitio oficial. Contá lo que viste.","<div class='warn'>📞 Llamá vos al banco. No uses un número que te pasen por mensaje.</div><div class='tip'>Y contale a un familiar. Pedir ayuda rápido ayuda mucho.</div>","Entendido"]]},
+ transf:{name:"💸 Antes de transferir",steps:[
+  ["Revisá tres cosas","Antes de confirmar mirá: el nombre del destinatario, el monto y el motivo. Un número mal escrito manda tu dinero a otra persona.","<div class='phone'><div class='row'>Destinatario: <strong>María Gómez</strong></div><div class='row'>Monto: <strong>Gs. 200.000</strong></div><div class='row'>Motivo: <strong>Alquiler</strong></div></div>","Revisé los tres datos"],
+  ["¿Alguien te presiona?","Si alguien por teléfono o mensaje te dice qué transferir, apurándote o amenazando, es una estafa.","<div class='phone'><div class='row bad'>📞 «Transferí ya o perdés tu cuenta. No cortes.»</div></div><div class='warn'>🚫 Cortá. Llamá vos al banco por un canal oficial.</div>","Entendido: corto la llamada"],
+  ["Seguí practicando","En la pantalla «Practicar una transferencia» de la app podés hacer una transferencia ficticia completa.","<div class='tip'>Es una práctica sin dinero real.</div>","Entendido"]]},
+ claves:{name:"🔑 Claves, PIN y códigos",steps:[
+  ["Tus claves son solo tuyas","La clave, el PIN y los códigos o tokens que te llegan son personales. Ni el banco ni la policía te los piden.","<div class='phone'><div class='row bad'>📞 «Soy del banco. Dígame el código que le llegó.»</div></div><div class='warn'>🚫 No lo digas, aunque la voz suene seria.</div>","Entendido: no lo digo"],
+  ["Si ya lo dijiste","Llamá enseguida al banco por el número oficial, cambiá tu clave y avisá a un familiar.","<div class='phone'><div class='row on'>1. Llamar al banco  2. Cambiar la clave  3. Avisar a un familiar</div></div>","Entendido"]]},
+ perdi:{name:"📵 Perdí el celular o la tarjeta",steps:[
+  ["Avisá cuanto antes","Llamá al número oficial del banco, el que figura en el reverso de la tarjeta o en el sitio oficial, y pedí bloquear la tarjeta o el acceso.","<div class='phone'><div class='row on'>💳 Reverso de la tarjeta: número de atención</div></div><div class='tip'>Guardá ese número en un papel, en un lugar seguro, antes de necesitarlo.</div>","Entendido"],
+  ["Cambiá tus claves","Después, cambiá las claves de tus cuentas y pedí ayuda a un familiar para hacerlo si lo necesitás.","<div class='phone'><div class='row on'>🔒 Cambiar clave</div></div>","Entendido"]]}
+};
+var mod=null,idx=0,done={};
+function menu(){mod=null;document.getElementById('prog').textContent="Elegí qué querés practicar";document.getElementById('barfill').style.width="0%";
+  var s="<h1>Usá el banco con seguridad</h1><p>Elegí una práctica. Podés repetirlas todas las veces que quieras.</p>";
+  Object.keys(M).forEach(function(k){s+="<button class='btn sec' data-m='"+k+"'>"+(done[k]?"✅ ":"")+M[k].name+"</button>";});
+  document.getElementById('screen').innerHTML=s;}
+function step(){var m=M[mod],n=m.steps.length;
+  if(idx>=n){done[mod]=true;document.getElementById('prog').textContent=m.name;document.getElementById('barfill').style.width="100%";
+    document.getElementById('screen').innerHTML="<h1>¡Muy bien!</h1><div class='fb'>Terminaste: "+m.name+"</div><p style='margin-top:12px'>En tu banco real los nombres pueden ser distintos. Ante la duda, llamá al número oficial o pedí ayuda a un familiar.</p><button class='btn' data-menu='1'>Volver al menú</button><button class='btn sec' data-m='"+mod+"'>🔁 Practicar otra vez</button>";return;}
+  var s=m.steps[idx];
+  document.getElementById('prog').textContent=m.name+" · Paso "+(idx+1)+" de "+n;
+  document.getElementById('barfill').style.width=((idx+1)/n*100)+"%";
+  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1><p>"+s[1]+"</p>"+s[2]+"<button class='btn' data-next='1'>👆 "+s[3]+"</button>"+(idx>0?"<button class='btn sec' data-prev='1'>← Atrás</button>":"")+"<button class='btn sec' data-menu='1'>Salir al menú</button>";}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+  if(d.m){mod=d.m;idx=0;step();window.scrollTo(0,0);}
+  else if(d.next){idx++;step();window.scrollTo(0,0);}
+  else if(d.prev){idx--;step();window.scrollTo(0,0);}
+  else if(d.menu){menu();window.scrollTo(0,0);}});
+var root=document.documentElement;
+document.getElementById('big').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.style.setProperty('--fs',on?'24px':'20px');});
+document.getElementById('con').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.setAttribute('data-theme',on?'dark':'light');});
+menu();
+</script>
+</body>
+</html>

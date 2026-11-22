@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: pedir un turno en el IPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F9;--card:#fff;--ink:#14202B;--mute:#4A5A68;--pri:#0B4F8A;--onpri:#fff;--line:#C9D3DC;--warnbg:#FFE08A;--warnink:#4A3600;--ok:#1B6B3A;--okbg:#DDF3E4;--bad:#A12B2B;--badbg:#FBE1E1;--fs:20px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#17382333;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 32px}
+.practice{background:var(--warnbg);color:var(--warnink);font-weight:700;padding:10px 14px;border-radius:10px;text-align:center;font-size:.9rem}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.tools button{font:inherit;font-size:.8rem;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.prog{font-size:.85rem;color:var(--mute);margin:4px 0 6px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:20px;margin-top:14px}
+h1{font-size:1.5rem;line-height:1.25;margin:0 0 10px}
+p{margin:0 0 12px}
+ul.chk{list-style:none;padding:0;margin:0}
+ul.chk li{padding:10px 0;border-bottom:1px solid var(--line)}
+ul.chk li:last-child{border:0}
+.btn{display:block;width:100%;font:inherit;font-weight:700;min-height:60px;padding:14px 18px;border-radius:14px;border:2px solid var(--pri);background:var(--pri);color:var(--onpri);margin-top:12px;cursor:pointer;text-align:center}
+.btn.sec{background:var(--card);color:var(--pri)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{outline:4px solid var(--ok);outline-offset:2px}
+:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+.mock{border:2px dashed var(--line);border-radius:12px;padding:14px;margin:12px 0;background:var(--bg)}
+.mock label{display:block;font-size:.85rem;color:var(--mute);margin-top:8px}
+.mock .f{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px}
+.sms{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.sms u{color:var(--pri);font-weight:700}
+.fb{border-radius:12px;padding:12px 14px;margin-top:12px;font-weight:700}
+.fb.ok{background:var(--okbg);color:var(--ok)}
+.fb.bad{background:var(--badbg);color:var(--bad)}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.nav{display:flex;gap:10px}
+.nav .btn{margin-top:14px}
+.home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="./">← Volver a Compañero Digital</a>
+  <div class="practice" role="note">🧪 PRÁCTICA. Es un ejemplo. No pongas tus datos reales. No se pide ningún turno de verdad.</div>
+  <div class="tools">
+    <button id="big" type="button" aria-pressed="false">A+ Letra grande</button>
+    <button id="con" type="button" aria-pressed="false">◐ Contraste</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <div class="nav" id="nav"></div>
+  <p class="note">Simulación educativa. No está conectada al IPS ni reserva turnos reales.</p>
+</div>
+
+<script>
+var i = 0, ok = {}, choice = {};
+var S = [
+ {t:"Vas a aprender a pedir un turno en el IPS",
+  h:function(){return "<p>Vas a practicar, paso a paso, cómo se pide un turno médico desde el celular, sin hacer fila.</p><p>Te lleva unos 10 minutos. Podés equivocarte y volver a intentar: no pasa nada.</p>";}},
+ {t:"Qué vas a necesitar",
+  h:function(){return "<p>Cuando lo hagas de verdad, tené a mano:</p><ul class='chk'><li>✅ Tu cédula de identidad</li><li>✅ Tu celular con internet o saldo</li><li>✅ Tu usuario y contraseña de Mi IPS</li><li>✅ Lápiz y papel para anotar la fecha y la hora</li></ul><p style='margin-top:12px'>Hoy, en la práctica, no necesitás nada de eso.</p>";}},
+ {t:"Elegí cómo pedir el turno",
+  h:function(){return "<p>Hay varias formas. Para esta práctica elegí la primera.</p><button class='btn' data-go='1'>🌐 Mi IPS (por internet)</button><button class='btn sec' data-info='Es una opción real: llamás al Call Center del IPS y una persona te atiende. Hoy practicamos con Mi IPS.'>📞 Llamar al Call Center</button><button class='btn sec' data-info='Es una opción real, pero solo para celulares Android. Hoy practicamos con Mi IPS.'>📱 Aplicación del IPS (solo Android)</button><button class='btn sec' data-info='Es una opción real: ir al hospital. Hoy practicamos con Mi IPS.'>🏥 Ir al hospital</button><div id='info' class='note' style='font-size:.95rem'></div>";},
+  own:true},
+ {t:"Paso 1: Abrí Mi IPS",
+  h:function(){return "<p>Abrí Mi IPS desde el navegador o desde la aplicación. Tocá el botón de abajo para abrir la página de práctica.</p><div class='mock'><strong>Mi IPS (ejemplo)</strong><p style='margin:6px 0 0'>Portal para asegurados</p></div>";}},
+ {t:"Paso 2: Ingresá con tu usuario",
+  h:function(){var f=ok.login;return "<p>Para practicar, usamos datos de ejemplo. Tocá el botón para completarlos.</p><div class='mock'><label>Cédula</label><div class='f'>"+(f?"1.234.567":"&nbsp;")+"</div><label>Contraseña</label><div class='f'>"+(f?"••••••••••":"&nbsp;")+"</div></div>"+(f?"<div class='fb ok'>Listo. En la vida real escribís vos tus datos, y nunca se los das a nadie por mensaje o llamada.</div>":"<button class='btn sec' data-act='fill'>Completar con datos de ejemplo</button>");},
+  gate:"login"},
+ {t:"Paso 3: Buscá las citas médicas",
+  h:function(){return "<p>Dentro de Mi IPS, buscá la opción para agendar una cita médica y tocala.</p><div class='mock'><div class='f' style='opacity:.6'>Mi perfil</div><div class='f' style='margin-top:8px;border-color:var(--pri);font-weight:700'>📅 Agendar cita médica</div><div class='f' style='margin-top:8px;opacity:.6'>Consulta de medicamentos</div></div><p class='note'>El nombre exacto del botón puede cambiar. Buscá algo parecido.</p>";}},
+ {t:"Paso 4: Elegí la especialidad",
+  h:function(){return pick('esp',['Clínica Médica','Cardiología','Oftalmología'],'Tocá una especialidad. Para empezar, Clínica Médica es la más común.');},
+  gate:"esp"},
+ {t:"Paso 5: Elegí hospital y médico",
+  h:function(){return pick('hosp',['Hospital de ejemplo, Dra. Ana Duarte','Clínica de ejemplo, Dr. Luis Benítez'],'Elegí el lugar más cercano a tu casa.');},
+  gate:"hosp"},
+ {t:"Paso 6: Elegí día y hora",
+  h:function(){return pick('dia',['Martes, 9:30','Jueves, 14:00','Viernes, 8:00'],'Mirá las fechas disponibles y tocá la que te quede bien.');},
+  gate:"dia"},
+ {t:"Paso 7: Confirmá y anotá",
+  h:function(){return "<div class='fb ok'>✅ Turno de práctica reservado</div><div class='mock'><strong>"+choice.esp+"</strong><br>"+choice.hosp+"<br>"+choice.dia+"</div><p><strong>Anotá en tu papel</strong> el día, la hora, el hospital y el médico.</p>";}},
+ {t:"Muy importante: confirmá tu turno",
+  h:function(){var r=ok.sms;return "<p>Unos días antes, el IPS te manda un mensaje de texto (SMS). Mirá este ejemplo y elegí qué hacer:</p><div class='sms'>📩 <strong>IPS</strong><br>Recordatorio de su cita. Confirme o cancele hasta 48 horas antes ingresando a: <u>enlace-de-ejemplo</u></div>"+(r?"<div class='fb ok'>¡Correcto! Tocando el enlace, el IPS sabe que vas a ir. Hacelo hasta 48 horas antes.</div>":"<button class='btn' data-act='smsok'>👆 Tocar el enlace y confirmar</button><button class='btn sec' data-act='smsbad'>✉️ Responder el mensaje</button><div id='smsfb'></div>");},
+  gate:"sms"},
+ {t:"Si algo sale mal",
+  h:function(){return "<ul class='chk'><li>🔸 <strong>No me deja entrar:</strong> revisá tu usuario y contraseña, o pedí ayuda a un familiar.</li><li>🔸 <strong>No hay turnos:</strong> es frecuente. Probá otro día u otro hospital, o llamá al Call Center.</li><li>🔸 <strong>No me llegó el SMS:</strong> revisá que tu número esté actualizado en el IPS.</li><li>🔸 <strong>No confirmé a tiempo:</strong> igual andá con tu cédula y preguntá en el hospital.</li></ul>";}},
+ {t:"Cuidate de las estafas",
+  h:function(){return "<p>El IPS <strong>no te pide plata ni contraseñas</strong> por WhatsApp ni por teléfono para darte un turno.</p><p>Si alguien te lo pide, cortá la llamada y pedí ayuda a alguien de confianza.</p><button class='btn sec' data-act='help'>🤝 Preparar mensaje para un familiar</button><div id='helpbox'></div>";}},
+ {t:"¡Muy bien, lo lograste!",
+  h:function(){return "<p>Así se pide un turno. Cuando lo hagas de verdad, vas a usar <strong>tus propios datos</strong> en la página oficial del IPS.</p><p>Recordá: nunca compartas tu contraseña con nadie.</p><button class='btn' data-act='restart'>🔁 Practicar otra vez</button>";}}
+];
+
+function pick(k,arr,txt){
+  var s="<p>"+txt+"</p>";
+  arr.forEach(function(a){s+="<button class='btn sec"+(choice[k]===a?" sel":"")+"' data-pick='"+k+"' data-val='"+a+"'>"+a+"</button>";});
+  return s;
+}
+
+function render(){
+  var s=S[i];
+  document.getElementById('prog').textContent="Paso "+(i+1)+" de "+S.length;
+  document.getElementById('barfill').style.width=((i+1)/S.length*100)+"%";
+  document.getElementById('screen').innerHTML="<h1>"+s.t+"</h1>"+s.h();
+  var okNext=!s.gate||ok[s.gate]||choice[s.gate];
+  var nav="";
+  if(i>0) nav+="<button class='btn sec' data-nav='-1'>← Atrás</button>";
+  if(i<S.length-1 && !s.own) nav+="<button class='btn' data-nav='1'"+(okNext?"":" disabled")+">Siguiente →</button>";
+  document.getElementById('nav').innerHTML=nav;
+  window.scrollTo(0,0);
+}
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.nav){i+=parseInt(b.dataset.nav,10);render();return;}
+  if(b.dataset.go){i+=1;render();return;}
+  if(b.dataset.info){document.getElementById('info').textContent=b.dataset.info;return;}
+  if(b.dataset.pick){choice[b.dataset.pick]=b.dataset.val;render();return;}
+  var a=b.dataset.act;
+  if(a==='fill'){ok.login=true;render();}
+  if(a==='smsok'){ok.sms=true;render();}
+  if(a==='smsbad'){document.getElementById('smsfb').innerHTML="<div class='fb bad'>Ojo: ese mensaje no llega al IPS y así se pierde el turno. Probá de nuevo.</div>";}
+  if(a==='help'){document.getElementById('helpbox').innerHTML="<div class='mock'>Hola, estoy sacando un turno en el IPS y me trabé. ¿Me ayudás?</div><p class='note'>Copiá este texto y enviáselo por WhatsApp.</p>";}
+  if(a==='restart'){ok={};choice={};i=0;render();}
+});
+
+var root=document.documentElement;
+document.getElementById('big').addEventListener('click',function(){
+  var on=this.getAttribute('aria-pressed')!=='true';
+  this.setAttribute('aria-pressed',on);
+  root.style.setProperty('--fs',on?'24px':'20px');
+});
+document.getElementById('con').addEventListener('click',function(){
+  var on=this.getAttribute('aria-pressed')!=='true';
+  this.setAttribute('aria-pressed',on);
+  root.setAttribute('data-theme',on?'dark':'light');
+});
+render();
+</script>
+</body>
+</html>

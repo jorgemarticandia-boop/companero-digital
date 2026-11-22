@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: usar mi teléfono</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F9;--card:#fff;--ink:#14202B;--mute:#4A5A68;--pri:#0B4F8A;--onpri:#fff;--line:#C9D3DC;--warnbg:#FFE08A;--warnink:#4A3600;--ok:#1B6B3A;--okbg:#DDF3E4;--fs:20px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 32px}
+.practice{background:var(--warnbg);color:var(--warnink);font-weight:700;padding:10px 14px;border-radius:10px;text-align:center;font-size:.9rem}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.tools button{font:inherit;font-size:.8rem;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.prog{font-size:.85rem;color:var(--mute);margin:4px 0 6px;min-height:1.3em}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:20px;margin-top:14px}
+h1{font-size:1.4rem;line-height:1.25;margin:0 0 10px}
+p{margin:0 0 12px}
+.btn{display:block;width:100%;font:inherit;font-weight:700;min-height:60px;padding:14px 18px;border-radius:14px;border:2px solid var(--pri);background:var(--pri);color:var(--onpri);margin-top:12px;cursor:pointer;text-align:center}
+.btn.sec{background:var(--card);color:var(--pri)}
+:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+.phone{border:3px solid var(--line);border-radius:18px;background:var(--bg);padding:12px;margin:12px 0}
+.row{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.row.on{border-color:var(--pri);font-weight:700;background:var(--okbg)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.grid .row{margin:0;text-align:center;font-size:1.1rem}
+.green{background:#1B8A3A;color:#fff;border-radius:999px;text-align:center;padding:10px;margin-top:8px;font-weight:700}
+.tip{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
+.warn{background:var(--warnbg);color:var(--warnink);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:700}
+.fb{border-radius:12px;padding:12px 14px;margin-top:14px;background:var(--okbg);color:var(--ok);font-weight:700}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="./">← Volver a Compañero Digital</a>
+  <div class="practice" role="note">🧪 PRÁCTICA. Es un teléfono de ejemplo. No se cambia nada en tu teléfono de verdad.</div>
+  <div class="tools">
+    <button id="big" type="button" aria-pressed="false">A+ Letra grande</button>
+    <button id="con" type="button" aria-pressed="false">◐ Contraste</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <p class="note">Simulación educativa. Los nombres y el lugar de los botones cambian según la marca de tu teléfono.</p>
+</div>
+
+<script>
+var M={
+ vol:{name:"🔊 Subir el volumen",steps:[
+  ["Buscá los botones del costado","En el costado del teléfono hay dos botoncitos: uno para subir (+) y otro para bajar (−) el volumen.","<div class='phone'><div class='row'>📱 Costado del teléfono</div><div class='row on'>🔼 Volumen + &nbsp;&nbsp; 🔽 Volumen −</div></div>","Tocar «Volumen +»"],
+  ["Mirá la barra","Al apretar, aparece una barra en la pantalla que muestra el nivel. Apretá varias veces hasta escuchar bien.","<div class='phone'><div class='row on'>🔊 ▮▮▮▮▮▯▯▯▯▯</div></div><div class='tip'>Si no suena nada, revisá que el teléfono no esté en silencio 🔇.</div>","Entendido"]]},
+ wifi:{name:"📶 Conectarme al Wi-Fi",steps:[
+  ["Abrí Ajustes","Buscá el ícono de engranaje ⚙️ llamado «Ajustes» o «Configuración».","<div class='phone'><div class='row'>📞 Teléfono</div><div class='row on'>⚙️ Ajustes</div><div class='row'>📷 Cámara</div></div>","Tocar «Ajustes»"],
+  ["Tocá Wi-Fi","Es la primera o segunda opción de la lista.","<div class='phone'><div class='row on'>📶 Wi-Fi</div><div class='row'>🔊 Sonido</div><div class='row'>🖥️ Pantalla</div></div>","Tocar «Wi-Fi»"],
+  ["Elegí tu red","Elegí el nombre de la red de tu casa. Suele estar en el router, el aparato de internet.","<div class='phone'><div class='row'>📶 Red_vecino 🔒</div><div class='row on'>📶 Red_Mi_Casa 🔒</div></div>","Tocar «Red_Mi_Casa»"],
+  ["Escribí la contraseña","Escribila solo en tu teléfono, nunca se la des a desconocidos. En la práctica usamos una de ejemplo.","<div class='phone'><div class='row'>Contraseña: ••••••••••</div><div class='row on'>Conectar</div></div><div class='tip'>Si no la sabés, pedí ayuda a alguien de confianza.</div>","Tocar «Conectar»"],
+  ["Listo","Cuando diga «Conectado», ya podés usar internet sin gastar tus datos.","<div class='phone'><div class='row on'>📶 Red_Mi_Casa — Conectado ✓</div></div>","Entendido"]]},
+ llamar:{name:"📞 Hacer una llamada",steps:[
+  ["Abrí Teléfono","Buscá el ícono del teléfono, casi siempre verde.","<div class='phone'><div class='row on'>📞 Teléfono</div><div class='row'>💬 Mensajes</div></div>","Tocar «Teléfono»"],
+  ["Elegí a quién llamar","Podés tocar un contacto guardado o usar el teclado para marcar un número.","<div class='phone'><div class='row on'>👩 Lucía (nieta)</div><div class='row'>👨 Carlos (vecino)</div><div class='row'>⌨️ Teclado</div></div>","Tocar «Lucía (nieta)»"],
+  ["Revisá y llamá","Mirá que el nombre sea el correcto y tocá el botón verde.","<div class='phone'><div class='row'>Llamar a: <strong>Lucía (nieta)</strong></div><div class='green'>📞 Llamar</div></div>","Tocar el botón verde"],
+  ["Para cortar","Cuando termines, tocá el botón rojo para colgar.","<div class='phone'><div class='row'>En llamada con Lucía…</div><div class='green' style='background:#B3261E'>📵 Colgar</div></div>","Tocar el botón rojo"]]},
+ letra:{name:"🔎 Agrandar la letra",steps:[
+  ["Abrí Ajustes","Entrá a «Ajustes» o «Configuración».","<div class='phone'><div class='row on'>⚙️ Ajustes</div></div>","Tocar «Ajustes»"],
+  ["Buscá Pantalla","Tocá «Pantalla». En algunos teléfonos es «Pantalla y brillo» o «Accesibilidad».","<div class='phone'><div class='row on'>🖥️ Pantalla</div><div class='row'>🔊 Sonido</div></div>","Tocar «Pantalla»"],
+  ["Elegí el tamaño de letra","Buscá «Tamaño de letra» o «Tamaño del texto» y mové la barra hacia la derecha hasta leer cómodo.","<div class='phone'><div class='row on'>🔤 Tamaño de letra</div><div class='row'>A ━━━━●━━ <strong style='font-size:1.4em'>A</strong></div></div>","Mover la barra a la derecha"]]},
+ contacto:{name:"👤 Guardar un contacto",steps:[
+  ["Abrí Contactos","Buscá el ícono «Contactos» o abrí «Teléfono» y tocá «Contactos».","<div class='phone'><div class='row on'>👤 Contactos</div></div>","Tocar «Contactos»"],
+  ["Tocá el signo +","Está abajo o arriba a la derecha. Sirve para agregar a una persona nueva.","<div class='phone'><div class='row'>Mis contactos</div><div class='row on'>➕ Nuevo contacto</div></div>","Tocar ➕"],
+  ["Escribí nombre y número","Poné el nombre y el número de teléfono. Revisá que los números estén bien.","<div class='phone'><div class='row'>Nombre: <strong>Lucía (nieta)</strong></div><div class='row'>Teléfono: 0981 000 000</div><div class='row on'>Guardar</div></div><div class='tip'>Si guardás a tu familia, vas a ver su nombre al llamar y vas a notar si escribe un número nuevo.</div>","Tocar «Guardar»"]]},
+ seg:{name:"🛡️ Cuidar mi teléfono",steps:[
+  ["Poné un bloqueo de pantalla","Un PIN o una huella evita que otra persona use tu teléfono si se pierde.","<div class='phone'><div class='row'>⚙️ Seguridad</div><div class='row on'>🔒 Bloqueo de pantalla → PIN</div></div><div class='warn'>No le digas tu PIN a nadie.</div>","Tocar «PIN» (práctica)"],
+  ["No instales aplicaciones por pedido de otros","Si alguien te llama o escribe para que instales algo, aunque diga ser del banco, es una estafa.","<div class='phone'><div class='row'>📞 «Soy del banco. Instalá esta aplicación para proteger tu cuenta.»</div></div><div class='warn'>🚫 Cortá y no instales nada.</div>","Entendido: corto"],
+  ["Instalá solo desde la tienda oficial","Descargá aplicaciones únicamente desde «Play Store» (Android) o «App Store» (iPhone).","<div class='phone'><div class='row on'>🛍️ Play Store / App Store</div><div class='row'>🔗 Enlace de un mensaje ❌</div></div>","Entendido"]]}
+};
+var mod=null,idx=0,done={};
+function menu(){mod=null;document.getElementById('prog').textContent="Elegí qué querés practicar";document.getElementById('barfill').style.width="0%";
+  var s="<h1>Practicá con tu teléfono</h1><p>Elegí una práctica. Podés repetirlas todas las veces que quieras.</p>";
+  Object.keys(M).forEach(function(k){s+="<button class='btn sec' data-m='"+k+"'>"+(done[k]?"✅ ":"")+M[k].name+"</button>";});
+  document.getElementById('screen').innerHTML=s;}
+function step(){var m=M[mod],n=m.steps.length;
+  if(idx>=n){done[mod]=true;document.getElementById('prog').textContent=m.name;document.getElementById('barfill').style.width="100%";
+    document.getElementById('screen').innerHTML="<h1>¡Muy bien!</h1><div class='fb'>Terminaste: "+m.name+"</div><p style='margin-top:12px'>En tu teléfono real los nombres pueden ser distintos. Si te perdés, pedí ayuda a un familiar.</p><button class='btn' data-menu='1'>Volver al menú</button><button class='btn sec' data-m='"+mod+"'>🔁 Practicar otra vez</button>";return;}
+  var s=m.steps[idx];
+  document.getElementById('prog').textContent=m.name+" · Paso "+(idx+1)+" de "+n;
+  document.getElementById('barfill').style.width=((idx+1)/n*100)+"%";
+  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1><p>"+s[1]+"</p>"+s[2]+"<button class='btn' data-next='1'>👆 "+s[3]+"</button>"+(idx>0?"<button class='btn sec' data-prev='1'>← Atrás</button>":"")+"<button class='btn sec' data-menu='1'>Salir al menú</button>";}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+  if(d.m){mod=d.m;idx=0;step();window.scrollTo(0,0);}
+  else if(d.next){idx++;step();window.scrollTo(0,0);}
+  else if(d.prev){idx--;step();window.scrollTo(0,0);}
+  else if(d.menu){menu();window.scrollTo(0,0);}});
+var root=document.documentElement;
+document.getElementById('big').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.style.setProperty('--fs',on?'24px':'20px');});
+document.getElementById('con').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.setAttribute('data-theme',on?'dark':'light');});
+menu();
+</script>
+</body>
+</html>

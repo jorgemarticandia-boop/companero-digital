@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F9;--card:#fff;--ink:#14202B;--mute:#4A5A68;--pri:#0B4F8A;--onpri:#fff;--line:#C9D3DC;--warnbg:#FFE08A;--warnink:#4A3600;--ok:#1B6B3A;--okbg:#DDF3E4;--me:#D8F0DC;--fs:20px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--me:#1E4A33;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--me:#1E4A33;color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 32px}
+.practice{background:var(--warnbg);color:var(--warnink);font-weight:700;padding:10px 14px;border-radius:10px;text-align:center;font-size:.9rem}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.tools button{font:inherit;font-size:.8rem;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.prog{font-size:.85rem;color:var(--mute);margin:4px 0 6px;min-height:1.3em}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:20px;margin-top:14px}
+h1{font-size:1.4rem;line-height:1.25;margin:0 0 10px}
+p{margin:0 0 12px}
+.btn{display:block;width:100%;font:inherit;font-weight:700;min-height:60px;padding:14px 18px;border-radius:14px;border:2px solid var(--pri);background:var(--pri);color:var(--onpri);margin-top:12px;cursor:pointer;text-align:center}
+.btn.sec{background:var(--card);color:var(--pri)}
+:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+.phone{border:3px solid var(--line);border-radius:18px;background:var(--bg);padding:12px;margin:12px 0}
+.row{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.row.on{border-color:var(--pri);font-weight:700}
+.bub{border-radius:12px;padding:8px 12px;margin-top:8px;max-width:85%;background:var(--card);border:1px solid var(--line)}
+.bub.me{background:var(--me);margin-left:auto}
+.tip{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
+.warn{background:var(--warnbg);color:var(--warnink);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:700}
+.fb{border-radius:12px;padding:12px 14px;margin-top:14px;background:var(--okbg);color:var(--ok);font-weight:700}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="./">← Volver a Compañero Digital</a>
+  <div class="practice" role="note">🧪 PRÁCTICA. Es un chat de ejemplo. No se envía nada a nadie de verdad.</div>
+  <div class="tools">
+    <button id="big" type="button" aria-pressed="false">A+ Letra grande</button>
+    <button id="con" type="button" aria-pressed="false">◐ Contraste</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <p class="note">Simulación educativa. Los botones pueden verse distintos según tu teléfono.</p>
+</div>
+
+<script>
+var chat="<div class='phone'><div class='row on'>👩 Lucía (nieta)</div>";
+function bub(t,me){return "<div class='bub"+(me?" me":"")+"'>"+t+"</div>";}
+var M={
+ msg:{name:"✉️ Enviar un mensaje",steps:[
+  ["Abrí WhatsApp","Buscá el ícono verde con un teléfono blanco y tocalo.","<div class='phone'><div class='row on'>💬 WhatsApp</div><div class='row'>📷 Cámara</div><div class='row'>🌐 Navegador</div></div>","Tocar el ícono de WhatsApp"],
+  ["Elegí a la persona","Tocá el nombre de la persona. Revisá que sea la correcta antes de escribir.","<div class='phone'><div class='row'>👨 Carlos (vecino)</div><div class='row on'>👩 Lucía (nieta)</div><div class='row'>👵 Doña Rosa</div></div>","Tocar «Lucía (nieta)»"],
+  ["Escribí y enviá","Tocá el espacio de abajo, escribí tu mensaje y tocá la flecha verde.","<div class='phone'>"+bub("Hola abuela, ¿cómo estás?")+"<div class='row'>✏️ Escribí un mensaje…  ➤</div></div>","Escribir «¡Hola, Lucía!» y tocar ➤"],
+  ["Mirá las tildes","Debajo de tu mensaje aparecen tildes: ✓ enviado, ✓✓ entregado, y ✓✓ en azul significa que ya lo leyó.","<div class='phone'>"+bub("Hola abuela, ¿cómo estás?")+bub("¡Hola, Lucía! ✓✓",1)+"</div>","Entendido"]]},
+ foto:{name:"📷 Enviar una foto",steps:[
+  ["Abrí la conversación","Entrá al chat de la persona a la que querés mandar la foto y revisá el nombre.","<div class='phone'><div class='row on'>👩 Lucía (nieta)</div></div>","Abrir el chat de Lucía"],
+  ["Tocá el clip o el +","Al lado de donde escribís hay un clip 📎 o un signo +. Tocalo.","<div class='phone'><div class='row on'>📎 / ➕  Escribí un mensaje…</div></div>","Tocar el clip 📎"],
+  ["Elegí Galería","Aparece un menú. Elegí «Galería» o «Fotos» para ver tus imágenes.","<div class='phone'><div class='row on'>🖼️ Galería</div><div class='row'>📷 Cámara</div><div class='row'>📄 Documento</div></div>","Tocar «Galería»"],
+  ["Elegí la foto y enviá","Tocá la foto, miralo bien y recién ahí tocá ➤ para enviar.","<div class='phone'><div class='row on'>🌄 Foto de ejemplo  ✔</div><div class='row'>➤ Enviar</div></div><div class='tip'>Revisá la foto antes de enviar. Una vez enviada, la otra persona la recibe.</div>","Tocar ➤ Enviar"]]},
+ audio:{name:"🔊 Escuchar un audio",steps:[
+  ["Encontrá el audio","Los audios aparecen con un triángulo ▶ y una línea con ondas.","<div class='phone'>"+bub("▶ ━━━━━━━ 0:12")+"</div>","Buscar el audio"],
+  ["Tocá el triángulo ▶","Tocalo una vez para escuchar. Para pausar, tocá de nuevo.","<div class='phone'>"+bub("<strong>▶</strong> ━━━━━━━ 0:12")+"</div>","Tocar ▶"],
+  ["Si no escuchás bien","Subí el volumen con los botones al costado del teléfono, o acercá el teléfono a la oreja.","<div class='phone'><div class='row on'>🔊 Botones de volumen (costado)</div></div>","Entendido"]]},
+ video:{name:"📹 Hacer una videollamada",steps:[
+  ["Abrí el chat","Entrá a la conversación de la persona a la que querés llamar.","<div class='phone'><div class='row on'>👩 Lucía (nieta)   📹 📞</div></div>","Abrir el chat de Lucía"],
+  ["Tocá la cámara 📹","Arriba, a la derecha, está el ícono de cámara. Es la videollamada. El teléfono 📞 es solo llamada.","<div class='phone'><div class='row'>👩 Lucía (nieta)   <strong>📹</strong> 📞</div></div>","Tocar 📹"],
+  ["Esperá que atienda","Vas a ver «Llamando…». Si no atiende, probá más tarde o mandale un mensaje.","<div class='phone'><div class='row on'>📹 Llamando a Lucía…</div></div><div class='tip'>Antes de llamar, comprobá que elegiste el contacto correcto.</div>","Entendido"]]},
+ seg:{name:"🛡️ Cuidar mi WhatsApp",steps:[
+  ["Nunca compartas el código","Si alguien te pide un código de 6 dígitos que te llegó por SMS, es un intento de robarte el WhatsApp.","<div class='phone'>"+bub("Hola, te puse de referencia, pasame el código que te llegó.")+bub("📩 Tu código de WhatsApp es 000-000. No lo compartas.")+"</div><div class='warn'>🚫 No lo compartas, ni con alguien que parezca conocido.</div>","Entendido: no lo comparto"],
+  ["Activá la verificación en dos pasos","Es una segunda llave: aunque alguien tenga el código, no puede entrar sin tu PIN. En WhatsApp: Ajustes → Cuenta → Verificación en dos pasos → Activar.","<div class='phone'><div class='row'>⚙️ Ajustes</div><div class='row'>👤 Cuenta</div><div class='row on'>🔐 Verificación en dos pasos → Activar</div></div><div class='tip'>Elegí un PIN de 6 números que recuerdes. No se lo digas a nadie.</div>","Tocar «Activar» (práctica)"],
+  ["Si te escribe un desconocido","No toques enlaces ni respondas pidiendo datos. Bloqueá el contacto y avisale a alguien de confianza.","<div class='phone'>"+bub("Ganaste un premio. Tocá acá: enlace-raro")+"<div class='row on'>⛔ Bloquear y denunciar</div></div>","Tocar «Bloquear»"]]}
+};
+var mod=null,idx=0,done={};
+function menu(){
+  mod=null;
+  document.getElementById('prog').textContent="Elegí qué querés practicar";
+  document.getElementById('barfill').style.width="0%";
+  var s="<h1>Practicá WhatsApp</h1><p>Elegí una práctica. Podés repetirlas todas las veces que quieras.</p>";
+  Object.keys(M).forEach(function(k){s+="<button class='btn sec' data-m='"+k+"'>"+(done[k]?"✅ ":"")+M[k].name+"</button>";});
+  document.getElementById('screen').innerHTML=s;
+}
+function step(){
+  var m=M[mod],n=m.steps.length;
+  if(idx>=n){
+    done[mod]=true;
+    document.getElementById('prog').textContent=m.name;
+    document.getElementById('barfill').style.width="100%";
+    document.getElementById('screen').innerHTML="<h1>¡Muy bien!</h1><div class='fb'>Terminaste: "+m.name+"</div><p style='margin-top:12px'>Cuando lo hagas de verdad, vas a usar tus propios contactos. Si algo no se ve igual, pedí ayuda a un familiar.</p><button class='btn' data-menu='1'>Volver al menú</button><button class='btn sec' data-m='"+mod+"'>🔁 Practicar otra vez</button>";
+    return;
+  }
+  var s=m.steps[idx];
+  document.getElementById('prog').textContent=m.name+" · Paso "+(idx+1)+" de "+n;
+  document.getElementById('barfill').style.width=((idx+1)/n*100)+"%";
+  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1><p>"+s[1]+"</p>"+s[2]+"<button class='btn' data-next='1'>👆 "+s[3]+"</button>"+(idx>0?"<button class='btn sec' data-prev='1'>← Atrás</button>":"")+"<button class='btn sec' data-menu='1'>Salir al menú</button>";
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+  if(d.m){mod=d.m;idx=0;step();window.scrollTo(0,0);}
+  else if(d.next){idx++;step();window.scrollTo(0,0);}
+  else if(d.prev){idx--;step();window.scrollTo(0,0);}
+  else if(d.menu){menu();window.scrollTo(0,0);}
+});
+var root=document.documentElement;
+document.getElementById('big').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.style.setProperty('--fs',on?'24px':'20px');});
+document.getElementById('con').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.setAttribute('data-theme',on?'dark':'light');});
+menu();
+</script>
+</body>
+</html>

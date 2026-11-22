@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: fe de vida del IPS desde la app del banco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F9;--card:#fff;--ink:#14202B;--mute:#4A5A68;--pri:#0B4F8A;--onpri:#fff;--line:#C9D3DC;--warnbg:#FFE08A;--warnink:#4A3600;--ok:#1B6B3A;--okbg:#DDF3E4;--bad:#A12B2B;--badbg:#FBE1E1;--fs:20px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 32px}
+.practice{background:var(--warnbg);color:var(--warnink);font-weight:700;padding:10px 14px;border-radius:10px;text-align:center;font-size:.9rem}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.tools button{font:inherit;font-size:.8rem;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.prog{font-size:.85rem;color:var(--mute);margin:4px 0 6px;min-height:1.3em}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:20px;margin-top:14px}
+h1{font-size:1.4rem;line-height:1.25;margin:0 0 10px}
+p{margin:0 0 12px}
+ul.chk{list-style:none;padding:0;margin:0}
+ul.chk li{padding:9px 0;border-bottom:1px solid var(--line)}
+ul.chk li:last-child{border:0}
+.btn{display:block;width:100%;font:inherit;font-weight:700;min-height:60px;padding:14px 18px;border-radius:14px;border:2px solid var(--pri);background:var(--pri);color:var(--onpri);margin-top:12px;cursor:pointer;text-align:center}
+.btn.sec{background:var(--card);color:var(--pri)}
+:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+.phone{border:3px solid var(--line);border-radius:18px;background:var(--bg);padding:12px;margin:12px 0}
+.row{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.row.on{border-color:var(--pri);font-weight:700;background:var(--okbg)}
+.row.bad{border-color:var(--bad);background:var(--badbg)}
+.face{font-size:4rem;text-align:center;border:4px dashed var(--pri);border-radius:50%;width:150px;height:150px;line-height:142px;margin:10px auto}
+.id{border:3px dashed var(--pri);border-radius:12px;padding:22px 10px;text-align:center;margin:10px 0;font-weight:700}
+.tip{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
+.warn{background:var(--warnbg);color:var(--warnink);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:700}
+.fb{border-radius:12px;padding:12px 14px;margin-top:14px;background:var(--okbg);color:var(--ok);font-weight:700}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="./">← Volver a Compañero Digital</a>
+  <div class="practice" role="note">🧪 PRÁCTICA. Es un ejemplo. No uses tu cédula, tu rostro ni tus claves reales.</div>
+  <div class="tools">
+    <button id="big" type="button" aria-pressed="false">A+ Letra grande</button>
+    <button id="con" type="button" aria-pressed="false">◐ Contraste</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <p class="note">Simulación educativa. No está conectada a ningún banco ni al IPS. Los pasos reales pueden cambiar: seguí siempre lo que muestre tu aplicación oficial.</p>
+</div>
+
+<script>
+var SAFE="<div class='warn'>🚫 No mandes tu foto ni tu cédula por WhatsApp. El trámite se hace solo dentro de la aplicación oficial.</div>";
+var M={
+ cual:{name:"❓ ¿Qué aplicación me corresponde?",steps:[
+  ["Hay varias formas de hacerla","La fe de vida del IPS se hace cada 3 meses. Podés usar la aplicación Mi IPS, o la aplicación de tu banco si cobrás tu jubilación por ese banco (por ejemplo, GNB o Itaú).","<div class='phone'><div class='row on'>📱 Mi IPS (con Vivo)</div><div class='row on'>🏦 App de tu banco (GNB, Itaú)</div><div class='row'>🏥 Presencial, en el IPS</div></div>","Entendido"],
+  ["Elegí la de tu banco solo si cobrás ahí","Cada banco habilita la opción solo para sus propios clientes. Si cobrás por otro banco, usá Mi IPS.","<div class='tip'>Si cambió el banco donde cobrás, mirá cuál es ahora en la página del IPS o en Mi IPS antes de empezar.</div>","Entendido"],
+  ["Ahora practicá","Volvé al menú y elegí tu banco para practicar.","<div class='tip'>Podés practicar los dos. Es solo un ejemplo.</div>","Entendido"]]},
+ gnb:{name:"🏦 Fe de vida con la app de GNB",steps:[
+  ["Abrí la aplicación oficial de GNB","Usá la aplicación de Banco GNB que ya tenés instalada, o bajala de la tienda oficial (Play Store o App Store). Esta opción es para jubilados del IPS que cobran por GNB.","<div class='phone'><div class='row on'>✅ GNB — Banco GNB Paraguay S.A.</div><div class='row bad'>❌ GNB Jubilados Fácil — desarrollador desconocido</div></div>","Tocar la aplicación oficial"],
+  ["Buscá «Fe de Vida IPS»","En la pantalla inicial, tocá el ícono del menú y elegí «Fe de Vida IPS». Si no aparece, actualizá la aplicación desde la tienda oficial.","<div class='phone'><div class='row'>☰ Menú</div><div class='row'>💳 Mis tarjetas</div><div class='row on'>🧑 Fe de Vida IPS</div></div>","Tocar «Fe de Vida IPS»"],
+  ["Ingresá tu número de cédula","Escribí tu número de cédula y revisá los dígitos antes de continuar. En la práctica usamos uno de ejemplo.","<div class='phone'><div class='row'>Cédula: 1.234.567</div><div class='row on'>Continuar</div></div>"+SAFE,"Tocar «Continuar»"],
+  ["Fotografiá el frente de tu cédula","Apoyá la cédula sobre una superficie clara. Que se vean las cuatro esquinas y que no haya reflejos.","<div class='id'>🪪 Frente de la cédula (ejemplo)</div><div class='tip'>Buena luz, sin flash directo sobre el documento.</div>","Tocar «Sacar foto»"],
+  ["Fotografiá el dorso","Ahora la parte de atrás. Revisá que los datos se lean antes de aceptar.","<div class='id'>🪪 Dorso de la cédula (ejemplo)</div>","Tocar «Sacar foto»"],
+  ["Tomate la foto de tu cara","Poné el celular a la altura de tu cara, mirá a la cámara y seguí las indicaciones de la aplicación. Después revisá y enviá.","<div class='face' aria-hidden='true'>🙂</div><div class='tip'>Si no te reconoce, acomodá la luz y probá de nuevo con calma.</div>","Tocar «Tomar foto» (práctica)"],
+  ["Revisá la confirmación","Esperá a ver la confirmación. <strong>Si no aparece, no asumas que quedó hecho</strong>: consultá a GNB por sus canales oficiales.","<div class='phone'><div class='row on'>✅ Fe de vida realizada (ejemplo)</div></div>","Entendido"]]},
+ itau:{name:"🏦 Fe de vida con la app de Itaú",steps:[
+  ["¿Cobrás por Itaú?","La opción de Itaú es para jubilados y pensionados del IPS que cobran por Itaú. Si cobrás por otra entidad, usá el método que te corresponda.","<div class='phone'><div class='row on'>💳 Cobro mi jubilación por Itaú ✔</div></div>","Sí, cobro por Itaú"],
+  ["Abrí la aplicación oficial Itaú PY","Abrí Itaú PY, bajada de Play Store o App Store. Entrá solo con tus datos de siempre, en la aplicación oficial.","<div class='phone'><div class='row on'>✅ Itaú PY — Banco Itaú Paraguay</div><div class='row bad'>❌ Itaú Fe de Vida Express — desarrollador desconocido</div></div><div class='warn'>🚫 No compartas tu clave ni códigos con nadie.</div>","Tocar la aplicación oficial"],
+  ["Buscá «Fe de Vida»","Dentro de la aplicación, buscá «Fe de Vida» o «Fe de Vida IPS». Si no aparece, puede que todavía no esté habilitada para tu cuenta.","<div class='phone'><div class='row'>💸 Transferir</div><div class='row on'>🧑 Fe de Vida IPS</div></div><div class='tip'>No elijas una opción parecida si no estás seguro. Preguntá a Itaú por sus canales oficiales.</div>","Tocar «Fe de Vida IPS»"],
+  ["Seguí la verificación con tu cara","Buscá un lugar bien iluminado, sostené el celular firme y seguí las indicaciones de la aplicación.","<div class='face' aria-hidden='true'>🙂</div>"+SAFE,"Tocar «Tomar foto» (práctica)"],
+  ["Revisá el resultado","Esperá a que Itaú muestre la confirmación. <strong>Si no aparece, no asumas que quedó hecho</strong>: consultá el estado con Itaú o con el IPS. Guardá el aviso si la aplicación lo ofrece.","<div class='phone'><div class='row on'>✅ Fe de vida realizada (ejemplo)</div></div>","Entendido"]]},
+ mal:{name:"🔸 Si algo sale mal",steps:[
+  ["Las dudas más comunes","Casi siempre se arregla con calma.","<ul class='chk'><li>🔸 <strong>No me reconoce la cara:</strong> más luz, fondo claro y celular firme.</li><li>🔸 <strong>No aparece la opción:</strong> actualizá la aplicación desde la tienda oficial, o usá Mi IPS.</li><li>🔸 <strong>No se confirma:</strong> no asumas que quedó hecho. Consultá al banco o al IPS por sus canales oficiales.</li><li>🔸 <strong>Me pidieron plata o claves:</strong> cortá. Nadie las necesita para esto.</li></ul>","Entendido"]]}
+};
+var mod=null,idx=0,done={};
+function menu(){mod=null;document.getElementById('prog').textContent="Elegí qué querés practicar";document.getElementById('barfill').style.width="0%";
+  var s="<h1>Fe de vida con la app del banco</h1><p>Elegí una práctica. Podés repetirlas todas las veces que quieras.</p>";
+  Object.keys(M).forEach(function(k){s+="<button class='btn sec' data-m='"+k+"'>"+(done[k]?"✅ ":"")+M[k].name+"</button>";});
+  document.getElementById('screen').innerHTML=s;}
+function step(){var m=M[mod],n=m.steps.length;
+  if(idx>=n){done[mod]=true;document.getElementById('prog').textContent=m.name;document.getElementById('barfill').style.width="100%";
+    document.getElementById('screen').innerHTML="<h1>¡Muy bien!</h1><div class='fb'>Terminaste: "+m.name+"</div><p style='margin-top:12px'>Cuando lo hagas de verdad, usá <strong>tus propios datos</strong>, solo en la aplicación oficial. Si te perdés, pedí ayuda a un familiar.</p><button class='btn' data-menu='1'>Volver al menú</button><button class='btn sec' data-m='"+mod+"'>🔁 Practicar otra vez</button>";return;}
+  var s=m.steps[idx];
+  document.getElementById('prog').textContent=m.name+" · Paso "+(idx+1)+" de "+n;
+  document.getElementById('barfill').style.width=((idx+1)/n*100)+"%";
+  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1><p>"+s[1]+"</p>"+s[2]+"<button class='btn' data-next='1'>👆 "+s[3]+"</button>"+(idx>0?"<button class='btn sec' data-prev='1'>← Atrás</button>":"")+"<button class='btn sec' data-menu='1'>Salir al menú</button>";}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+  if(d.m){mod=d.m;idx=0;step();window.scrollTo(0,0);}
+  else if(d.next){idx++;step();window.scrollTo(0,0);}
+  else if(d.prev){idx--;step();window.scrollTo(0,0);}
+  else if(d.menu){menu();window.scrollTo(0,0);}});
+var root=document.documentElement;
+document.getElementById('big').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.style.setProperty('--fs',on?'24px':'20px');});
+document.getElementById('con').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.setAttribute('data-theme',on?'dark':'light');});
+menu();
+</script>
+</body>
+</html>

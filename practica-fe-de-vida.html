@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica: fe de vida del IPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7F9;--card:#fff;--ink:#14202B;--mute:#4A5A68;--pri:#0B4F8A;--onpri:#fff;--line:#C9D3DC;--warnbg:#FFE08A;--warnink:#4A3600;--ok:#1B6B3A;--okbg:#DDF3E4;--bad:#A12B2B;--badbg:#FBE1E1;--fs:20px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171D;--card:#19232C;--ink:#F1F5F8;--mute:#B6C3CE;--pri:#7DB8F0;--onpri:#08213A;--line:#3A4A58;--warnbg:#5A4600;--warnink:#FFE9A8;--ok:#7FD39B;--okbg:#173823;--bad:#F2A0A0;--badbg:#4A1E1E;color-scheme:dark}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 32px}
+.practice{background:var(--warnbg);color:var(--warnink);font-weight:700;padding:10px 14px;border-radius:10px;text-align:center;font-size:.9rem}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:10px 0}
+.tools button{font:inherit;font-size:.8rem;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.prog{font-size:.85rem;color:var(--mute);margin:4px 0 6px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:20px;margin-top:14px}
+h1{font-size:1.4rem;line-height:1.25;margin:0 0 10px}
+p{margin:0 0 12px}
+ul.chk{list-style:none;padding:0;margin:0}
+ul.chk li{padding:9px 0;border-bottom:1px solid var(--line)}
+ul.chk li:last-child{border:0}
+.btn{display:block;width:100%;font:inherit;font-weight:700;min-height:60px;padding:14px 18px;border-radius:14px;border:2px solid var(--pri);background:var(--pri);color:var(--onpri);margin-top:12px;cursor:pointer;text-align:center}
+.btn.sec{background:var(--card);color:var(--pri)}
+:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+.phone{border:3px solid var(--line);border-radius:18px;background:var(--bg);padding:12px;margin:12px 0}
+.row{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.row.on{border-color:var(--pri);font-weight:700;background:var(--okbg)}
+.row.bad{border-color:var(--bad);background:var(--badbg)}
+.face{font-size:4rem;text-align:center;border:4px dashed var(--pri);border-radius:50%;width:150px;height:150px;line-height:142px;margin:10px auto}
+.tip{background:var(--bg);border-left:6px solid var(--pri);padding:10px 14px;border-radius:8px;margin:12px 0}
+.warn{background:var(--warnbg);color:var(--warnink);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:700}
+.note{font-size:.85rem;color:var(--mute);margin-top:14px}
+.nav{display:flex;gap:10px}
+.nav .btn{margin-top:14px}
+.home{display:inline-block;margin:2px 0 8px;padding:10px 0;font-weight:700;color:var(--pri);text-decoration:none}.home:focus-visible{outline:4px solid var(--pri);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="./">← Volver a Compañero Digital</a>
+  <div class="practice" role="note">🧪 PRÁCTICA. Es un ejemplo. No uses tu cédula ni tu rostro reales. No se hace ningún trámite de verdad.</div>
+  <div class="tools">
+    <button id="big" type="button" aria-pressed="false">A+ Letra grande</button>
+    <button id="con" type="button" aria-pressed="false">◐ Contraste</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <div class="nav" id="nav"></div>
+  <p class="note">Simulación educativa. No está conectada al IPS. La fe de vida real se hace solo en la aplicación oficial Mi IPS.</p>
+</div>
+
+<script>
+var i=0;
+var S=[
+ ["¿Qué es la fe de vida?",function(){return "<p>Es el trámite con el que demostrás al IPS que seguís con vida, para <strong>seguir cobrando tu jubilación o pensión</strong>.</p><p>Hoy se puede hacer desde tu casa, con el celular, usando la aplicación <strong>Mi IPS</strong> y su herramienta <strong>Vivo</strong>, que reconoce tu cara.</p><div class='tip'>🔎 El trámite se habilita unos días antes del vencimiento. Confirmá fechas y plazos en la aplicación o en el sitio oficial del IPS.</div>";}],
+ ["Qué vas a necesitar",function(){return "<ul class='chk'><li>✅ Un celular con cámara e internet</li><li>✅ Tu número de cédula</li><li>✅ Tu contraseña de Mi IPS (o tu Identidad Electrónica)</li><li>✅ Un lugar con buena luz</li><li>✅ 10 minutos con calma</li></ul>";}],
+ ["Paso 1: Instalá Mi IPS",function(){return "<p>Buscá la aplicación en la tienda oficial de tu teléfono: <strong>Play Store</strong> (Android) o <strong>App Store</strong> (iPhone).</p><div class='phone'><div class='row on'>✅ Mi IPS — Instituto de Previsión Social</div><div class='row bad'>❌ Mi IPS Fe de Vida Rápida — desarrollador desconocido</div></div><div class='warn'>Fijate que sea la oficial. No bajes aplicaciones desde enlaces de mensajes.</div>";},"Tocar «Instalar» en la oficial"],
+ ["Paso 2: Ingresá",function(){return "<p>Abrí Mi IPS y entrá con tu número de cédula y tu contraseña. En la práctica usamos datos de ejemplo.</p><div class='phone'><div class='row'>Cédula: 1.234.567</div><div class='row'>Contraseña: ••••••••</div><div class='row on'>Ingresar</div></div><div class='tip'>Escribí tus datos vos mismo, y nunca se los des a nadie.</div>";},"Tocar «Ingresar»"],
+ ["Paso 3: Buscá la fe de vida",function(){return "<p>Dentro de Mi IPS, buscá la opción de <strong>Fe de vida</strong> o <strong>Vivo</strong>. Los nombres pueden cambiar un poco.</p><div class='phone'><div class='row'>📄 Mis datos</div><div class='row on'>🧑 Fe de vida (Vivo)</div><div class='row'>🏥 Citas médicas</div></div><p class='note'>🔎 Confirmá el nombre exacto del botón en tu aplicación.</p>";},"Tocar «Fe de vida»"],
+ ["Paso 4: Descargá Vivo (solo la primera vez)",function(){return "<p>Si es tu primera vez, tocá «Aceptar» y la aplicación te pide descargar <strong>Vivo</strong>. Descargala de la tienda oficial. Después volvé a abrir Mi IPS y seguí los pasos.</p><div class='phone'><div class='row on'>Aceptar → Descargar Vivo</div></div>";},"Tocar «Aceptar»"],
+ ["Paso 5: Prepará la foto",function(){return "<p>La aplicación te muestra recomendaciones. Antes de sacar la foto:</p><ul class='chk'><li>💡 Buscá un lugar bien iluminado, con luz de frente</li><li>🧱 Un fondo claro, sin gente detrás</li><li>👓 Sacate los anteojos si lo pide</li><li>🙂 Que se vea toda tu cara, sin gorra ni pelo tapando</li><li>🧼 Limpiá la cámara con un paño</li></ul>";},"Ya estoy listo"],
+ ["Paso 6: Sacá la foto",function(){return "<p>Poné el celular a la altura de tu cara, mirá a la cámara y mantenelo firme. Seguí las indicaciones que aparezcan.</p><div class='face' aria-hidden='true'>🙂</div><div class='tip'>Si no te reconoce, no pasa nada: acomodá la luz y probá de nuevo con calma.</div>";},"Tocar «Tomar foto» (práctica)"],
+ ["Paso 7: Enviá la foto",function(){return "<p>Mirá que tu cara se vea clara y tocá <strong>«Enviar foto»</strong>.</p><div class='phone'><div class='row'>🙂 Foto de ejemplo</div><div class='row on'>Enviar foto</div></div>";},"Tocar «Enviar foto»"],
+ ["Revisá la confirmación",function(){return "<div class='phone'><div class='row on'>✅ Fe de vida realizada (ejemplo)</div></div><p>Esperá a ver la confirmación en pantalla. <strong>Si no aparece, no asumas que quedó hecho</strong>: volvé a intentar o pedí ayuda.</p>";},"Entendido"],
+ ["Si algo sale mal",function(){return "<ul class='chk'><li>🔸 <strong>No me reconoce la cara:</strong> más luz, fondo claro y celular firme.</li><li>🔸 <strong>No me deja entrar:</strong> revisá tu cédula y contraseña, o pedí ayuda a un familiar.</li><li>🔸 <strong>No puedo hacerlo desde el celular:</strong> consultá al IPS por sus canales oficiales para ver otra forma de hacerlo. 🔎</li></ul>";}],
+ ["Cuidate de las estafas",function(){return "<div class='warn'>🚫 Nunca mandes tu foto ni tu cédula por WhatsApp, aunque te digan que es del IPS.</div><div class='warn'>🚫 Nadie te tiene que pedir plata ni contraseñas para hacerte la fe de vida.</div><p>Hacela solo en la aplicación oficial. Ante la duda, cortá y preguntale a alguien de confianza.</p>";}],
+ ["¡Muy bien, lo lograste!",function(){return "<p>Así se hace la fe de vida desde el celular. Cuando la hagas de verdad, usá <strong>tus propios datos</strong>, solo en la aplicación oficial Mi IPS.</p><button class='btn sec' data-r='1'>🔁 Practicar otra vez</button>";}]
+];
+function render(){var s=S[i];
+  document.getElementById('prog').textContent="Paso "+(i+1)+" de "+S.length;
+  document.getElementById('barfill').style.width=((i+1)/S.length*100)+"%";
+  document.getElementById('screen').innerHTML="<h1>"+s[0]+"</h1>"+s[1]();
+  var n="";if(i>0)n+="<button class='btn sec' data-n='-1'>← Atrás</button>";
+  if(i<S.length-1)n+="<button class='btn' data-n='1'>"+(s[2]?"👆 "+s[2]:"Siguiente →")+"</button>";
+  document.getElementById('nav').innerHTML=n;}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+  if(d.n){i+=parseInt(d.n,10);render();window.scrollTo(0,0);}
+  if(d.r){i=0;render();window.scrollTo(0,0);}});
+var root=document.documentElement;
+document.getElementById('big').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.style.setProperty('--fs',on?'24px':'20px');});
+document.getElementById('con').addEventListener('click',function(){var on=this.getAttribute('aria-pressed')!=='true';this.setAttribute('aria-pressed',on);root.setAttribute('data-theme',on?'dark':'light');});
+render();
+</script>
+</body>
+</html>
